@@ -38,11 +38,18 @@ pipeline {
     }
 
     post {
-        failure {
-            echo 'Build failed! Sending logs to AI analyzer...'
-        }
-        success {
-            echo 'Build succeeded!'
-        }
+    failure {
+        echo 'Build failed! Sending logs to AI analyzer...'
+        sh '''
+            LOG=$(cat /var/jenkins_home/workspace/llm-devops-pipeline/build.log 2>/dev/null || echo "Build failed - check Jenkins console")
+            curl -s -X POST http://localhost:8000/analyze \
+                -H "Content-Type: application/json" \
+                -d "{\"log\": \"$LOG\"}" \
+                || echo "Could not reach analyzer"
+        '''
     }
+    success {
+        echo 'Build succeeded!'
+    }
+}
 }
