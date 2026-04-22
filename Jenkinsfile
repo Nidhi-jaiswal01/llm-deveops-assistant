@@ -13,11 +13,11 @@ pipeline {
         }
 
         stage('Build Backend') {
-            steps {
-                echo 'Building backend Docker image...'
-                sh 'docker build -t llm-devops-backend ./backend'
-            }
-        }
+    steps {
+        echo 'Building backend Docker image...'
+        sh 'docker build --no-cache -t llm-devops-backend ./backend'
+    }
+}
 
         stage('Build Frontend') {
             steps {
