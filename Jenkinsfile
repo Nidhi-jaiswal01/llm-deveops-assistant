@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    environment {
+    GROQ_API_KEY = credentials('GROQ_API_KEY')
+}
 
     stages {
         stage('Clone') {
@@ -24,11 +27,14 @@ pipeline {
         }
 
         stage('Deploy') {
-            steps {
-                echo 'Deploying with docker-compose...'
-                sh 'docker compose up -d'
-            }
-        }
+    steps {
+        echo 'Deploying containers...'
+        sh 'docker stop llm-backend llm-frontend || true'
+        sh 'docker rm llm-backend llm-frontend || true'
+        sh 'docker run -d --name llm-backend -p 8000:8000 -e GROQ_API_KEY=$GROQ_API_KEY llm-devops-backend uvicorn main:app --host 0.0.0.0 --port 8000'
+        sh 'docker run -d --name llm-frontend -p 80:80 llm-devops-frontend'
+    }
+}
     }
 
     post {
