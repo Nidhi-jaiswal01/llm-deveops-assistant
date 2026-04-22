@@ -43,10 +43,11 @@ pipeline {
     failure {
         echo 'Build failed! Sending logs to AI analyzer...'
         sh '''
-            LOG=$(cat /var/jenkins_home/workspace/llm-devops-pipeline/build.log 2>/dev/null || echo "Build failed - check Jenkins console")
+            LOGS=$(docker logs llm-backend 2>&1 | tail -20 || echo "No container logs available")
             curl -s -X POST http://localhost:8000/analyze \
                 -H "Content-Type: application/json" \
-                -d "{\"log\": \"$LOG\"}" \
+                -d "{\"log\": \"${LOGS}\"}" \
+                && echo "AI analysis complete" \
                 || echo "Could not reach analyzer"
         '''
     }
