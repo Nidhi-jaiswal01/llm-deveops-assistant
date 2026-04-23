@@ -2,6 +2,7 @@ import { useState } from "react"
 
 export default function AnalysisResult({ analysis, error, history }) {
   const [copied, setCopied] = useState(false)
+  const [showHistory, setShowHistory] = useState(false)
 
   const handleCopy = () => {
     navigator.clipboard.writeText(analysis)
@@ -34,16 +35,24 @@ export default function AnalysisResult({ analysis, error, history }) {
 
       {history.length > 0 && (
         <div className="w-full max-w-3xl">
-          <h2 className="text-sm font-medium text-gray-400 mb-3">Past Analyses</h2>
-          <div className="flex flex-col gap-4">
-            {history.map((item, index) => (
-              <div key={index} className="bg-gray-900 rounded-2xl p-6 shadow-lg">
-                <p className="text-xs text-gray-500 mb-2">{item.timestamp}</p>
-                <p className="text-gray-400 text-xs font-mono mb-3 truncate">Log: {item.log}</p>
-                <p className="text-gray-100 text-sm leading-relaxed whitespace-pre-wrap">{item.analysis}</p>
-              </div>
-            ))}
-          </div>
+          <button
+            onClick={() => setShowHistory(!showHistory)}
+            className="w-full py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-400 text-sm font-medium transition-all duration-200 mb-4"
+          >
+            {showHistory ? "Hide Past Analyses" : `Show Past Analyses (${history.length})`}
+          </button>
+
+          {showHistory && (
+            <div className="flex flex-col gap-4">
+              {history.map((item, index) => (
+                <div key={index} className="bg-gray-900 rounded-2xl p-6 shadow-lg">
+                  <p className="text-xs text-gray-500 mb-2">{item.timestamp}</p>
+                  <p className="text-gray-400 text-xs font-mono mb-3 truncate">Log: {item.log}</p>
+                  <p className="text-gray-100 text-sm leading-relaxed whitespace-pre-wrap">{item.analysis}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </>
