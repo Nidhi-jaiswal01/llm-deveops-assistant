@@ -19,6 +19,18 @@ pipeline {
     }
 }
 
+        stage('Test Backend') {
+    steps {
+        echo 'Running backend tests...'
+        sh '''
+            docker run --rm \
+                -e GROQ_API_KEY=$GROQ_API_KEY \
+                llm-devops-backend \
+                python -m pytest test_main.py -v
+        '''
+    }
+}
+
         stage('Build Frontend') {
             steps {
                 echo 'Building frontend Docker image...'
