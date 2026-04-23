@@ -1,4 +1,14 @@
+import { useState } from "react"
+
 export default function AnalysisResult({ analysis, error, history }) {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(analysis)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   return (
     <>
       {error && (
@@ -9,7 +19,15 @@ export default function AnalysisResult({ analysis, error, history }) {
 
       {analysis && (
         <div className="w-full max-w-3xl bg-gray-900 rounded-2xl p-6 shadow-lg mb-6">
-          <h2 className="text-sm font-medium text-gray-400 mb-3">AI Analysis</h2>
+          <div className="flex justify-between items-center mb-3">
+            <h2 className="text-sm font-medium text-gray-400">AI Analysis</h2>
+            <button
+              onClick={handleCopy}
+              className="text-xs px-3 py-1 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-300 transition-all duration-200"
+            >
+              {copied ? "Copied!" : "Copy"}
+            </button>
+          </div>
           <p className="text-gray-100 text-sm leading-relaxed whitespace-pre-wrap">{analysis}</p>
         </div>
       )}
