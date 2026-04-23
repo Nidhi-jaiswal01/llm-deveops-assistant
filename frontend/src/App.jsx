@@ -8,6 +8,7 @@ export default function App() {
   const [analysis, setAnalysis] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const [history, setHistory] = useState([])
 
   const analyzeLog = async () => {
     if (!log.trim()) return
@@ -24,6 +25,13 @@ export default function App() {
       if (!response.ok) throw new Error("Server error")
       const data = await response.json()
       setAnalysis(data.analysis)
+
+      setHistory(prev => [{
+        log: log.slice(0, 80),
+        analysis: data.analysis,
+        timestamp: new Date().toLocaleString()
+      }, ...prev].slice(0, 10))
+
     } catch (err) {
       setError("Something went wrong. Make sure your backend is running.")
     } finally {
@@ -35,7 +43,7 @@ export default function App() {
     <div className="min-h-screen bg-gray-950 text-white flex flex-col items-center py-16 px-4">
       <Header />
       <LogInput log={log} setLog={setLog} onAnalyze={analyzeLog} loading={loading} />
-      <AnalysisResult analysis={analysis} error={error} />
+      <AnalysisResult analysis={analysis} error={error} history={history} />
     </div>
   )
 }
