@@ -41,20 +41,8 @@ pipeline {
 
     post {
     failure {
-        echo 'Build failed! Sending logs to AI analyzer...'
-        sh '''
-            LOGS=$(docker logs llm-backend 2>&1 | tail -20 || echo "Build failed - no container logs")
-            python3 -c "
-import urllib.request, json
-data = json.dumps({'log': '''$LOGS'''}).encode()
-req = urllib.request.Request('http://localhost:8000/analyze', data=data, headers={'Content-Type': 'application/json'})
-try:
-    res = urllib.request.urlopen(req)
-    print(res.read().decode())
-except Exception as e:
-    print('Could not reach analyzer:', e)
-"
-        '''
+        echo 'Build failed! Check console output above for details.'
+        sh 'docker logs llm-backend 2>&1 | tail -20 || echo "No container logs available"'
     }
     success {
         echo 'Build succeeded!'
